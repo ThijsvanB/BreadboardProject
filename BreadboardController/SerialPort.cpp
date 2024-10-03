@@ -1,11 +1,11 @@
 #include "SerialPort.h"
 
-HANDLE openDevice() {
+HANDLE openDevice(LPCWSTR comNumber, DWORD baudRate) {
 	std::cout << "initializing handle\n";
 
 	HANDLE hSerial;
 
-	hSerial = CreateFile(L"COM3", GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	hSerial = CreateFile(comNumber, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
 	if (hSerial == INVALID_HANDLE_VALUE) {
 		if (GetLastError() == ERROR_FILE_NOT_FOUND) {
@@ -35,7 +35,7 @@ HANDLE openDevice() {
 		return NULL;
 	}
 
-	dcbSerialParams.BaudRate = CBR_115200;
+	dcbSerialParams.BaudRate = baudRate;
 	dcbSerialParams.ByteSize = 8;
 	dcbSerialParams.StopBits = ONESTOPBIT;
 	dcbSerialParams.Parity = NOPARITY;

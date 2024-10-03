@@ -1,10 +1,10 @@
 #pragma once
-#include "WindowsErrors.h"
+#include "Common/WindowsErrors.h"
 
 /**
 * Open the serial port device
 */
-HANDLE openDevice();
+HANDLE openDevice(LPCWSTR comNumber, DWORD baudRate);
 
 /**
 * Close the serial port device
