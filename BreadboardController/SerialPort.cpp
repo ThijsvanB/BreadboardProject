@@ -86,5 +86,34 @@ BOOL sendByte(HANDLE device, byte value) {
 		printLastError();
 	}
 
+	readByte(device, NULL);
+
 	return success;
+}
+
+BOOL readByte(HANDLE device, byte* value) {
+	byte readBuffer;
+	DWORD bytesRead;
+
+	while (true) {
+		int err = ReadFile(device, &readBuffer, 1, &bytesRead, NULL);
+
+		if (bytesRead > 0) {
+			if (err == 0) {
+				printLastError();
+			}
+			else {
+				std::cout << "Read byte: " << (int)readBuffer << " = " << std::bitset<8>(readBuffer) << " - Size: " << bytesRead << std::endl;
+
+				if (value != NULL) {
+					*value = bytesRead;
+				}
+				return TRUE;
+			}
+			break;
+		}
+		Sleep(5);
+	}
+
+	return FALSE;
 }
