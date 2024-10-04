@@ -1,12 +1,12 @@
 #include "SerialPort.h"
 #include "GUI/Window.h"
 
+HANDLE serialDevice;
+
 void Button1Handler() {
 	std::cout << "FunctionPointerWorking" << std::endl;
-}
 
-void Button2Handler() {
-	std::cout << "2" << std::endl;
+	sendByte(serialDevice, 0b01010010);
 }
 
 int main() {
@@ -19,7 +19,10 @@ int main() {
 	}
 
 	createButton(hwnd, { 10, 10 }, { 100, 20 }, &Button1Handler);
-	createButton(hwnd, { 10, 40 }, { 100, 20 }, &Button2Handler);
+
+	serialDevice = openDevice(L"COM6", CBR_110);
 
 	msgLoop();
+
+	closeDevice(serialDevice);
 }
