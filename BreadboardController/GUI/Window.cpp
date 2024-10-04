@@ -1,5 +1,10 @@
 #include "Window.h"
 
+HWND Buttons[16];
+int buttonCount;
+
+void (*functions[16])();
+
 HWND createWindow() {
     HINSTANCE hInst = GetModuleHandleW(NULL);
 
@@ -13,7 +18,7 @@ HWND createWindow() {
 
     // Create the window.
 
-    HWND hwnd = CreateWindowEx(
+    HWND hwnd = CreateWindowExW(
         0,                                                      // Optional window styles.
         L"Main class",                                          // Window class
         L"Breadboard Project",                                  // Window text
@@ -27,6 +32,8 @@ HWND createWindow() {
         hInst,              // Instance handle
         NULL                // Additional application data
     );
+
+    buttonCount = 0;
 
     return hwnd;
 }
@@ -59,8 +66,42 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         EndPaint(hwnd, &ps);
     }
+    case WM_COMMAND:
+    {
+        for(int i = 0; i < buttonCount; i++) {
+            if (LOWORD(wParam) == i + BUTTON1) {
+                functions[i]();
+            }
+        }
+    }
     return 0;
 
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+void createButton(HWND parent, POINT position, POINT size, void (*func)()) {
+    if (buttonCount >= 16) {
+        std::cout << "Too many buttons";
+        return;
+    }
+
+    HWND hwndButton = CreateWindowW(
+        L"BUTTON",  
+        L"OK",      
+        WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  
+        position.x,         
+        position.y,        
+        size.x,        
+        size.y,        
+        parent,    
+        (HMENU)(BUTTON1 + buttonCount),       
+        (HINSTANCE)GetWindowLongPtr(parent, GWLP_HINSTANCE),
+        NULL);
+
+    if (hwndButton != NULL) {
+        Buttons[buttonCount] = hwndButton;
+        functions[buttonCount] = func;
+        buttonCount++;
+    }
 }
